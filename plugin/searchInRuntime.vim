@@ -4,13 +4,16 @@
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 " 		<URL:http://hermitte.free.fr/vim/>
 " Last Update:  $Date$
-" Version:	2.1.6
+" Version:	2.1.7
 "
 " Purpose:	Search a file in the runtime path, $PATH, or any other
 "               variable, and execute an Ex command on it.
 " URL:http://hermitte.free.fr/vim/ressources/vimfiles/plugin/searchInRuntime.vim
 " ======================================================================
 " History: {{{
+"	Version 2.1.7
+"	(*) It wasn't able to expand paths on windows because of fnamemodify()
+"	that returns '.' instead of an empty string.
 "	Version 2.1.6
 "	(*) extracts paths from options specifications like "-I/usr/include" or
 "	"--option=path"
@@ -630,6 +633,7 @@ function! s:FindMatchingFiles(pathsList, ArgLead)
 
   " Add the leading path as it has been stripped by fnamemodify
   let lead = fnamemodify(ArgLead, ':h') . '/'
+  let lead = substitute(lead, '^.[/\\]', '', '') " fnamemodify may returns '.' on windows ...
   if strlen(lead) > 1
     let result = substitute(result, '\(^\|\n\)', '\1'.lead, 'g')
   endif
