@@ -256,6 +256,7 @@ function! s:SearchIn(do_all, cmd, rpath, ...)
   let rp = a:rpath
   let f = ''
   let firstTime = 1
+  let params0 = '' | let params = '' 
   while strlen(rp) != 0
     let r  = matchstr(rp, '^[^,]*' )."/"
     let rp = substitute(rp, '.\{-}\(,\|$\)', '', '')
