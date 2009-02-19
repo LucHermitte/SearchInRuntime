@@ -395,8 +395,8 @@ function! s:SelectOne(ask_even_if_already_opened, path, gpatterns)
 	  \ || lh#path#IsURL(a:gpatterns[i])
       let matches += [ a:gpatterns[i] ]
     else
-    let m = globpath(a:path, a:gpatterns[i])
-      let matches += split(m, '\n')
+    let m = lh#path#GlobAsList(a:path, a:gpatterns[i])
+    call extend (matches, m)
     endif
     let i = i + 1
   endwhile
