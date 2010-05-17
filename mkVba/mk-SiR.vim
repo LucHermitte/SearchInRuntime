@@ -3,8 +3,8 @@
 " File:		mk-SiR.vim
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 "		<URL:http://hermitte.free.fr/vim/>
-" Version:	2.1.7
-let s:version = '2.1.7'
+" Version:	2.1.8
+let s:version = '2.1.8'
 " Created:	06th Nov 2007
 " Last Update:	$Date$
 "------------------------------------------------------------------------

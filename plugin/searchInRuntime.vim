@@ -1,10 +1,10 @@
 " ======================================================================
 " $Id$
-" File:		searchInRuntime.vim 
+" File:		plugin/searchInRuntime.vim 
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-" 		<URL:http://hermitte.free.fr/vim/>
+" 		<URL:http://code.google.com/p/lh-vim/>
 " Last Update:  $Date$
-" Version:	2.1.7
+" Version:	2.1.8
 "
 " Purpose:	Search a file in the runtime path, $PATH, or any other
 "               variable, and execute an Ex command on it.
@@ -19,7 +19,7 @@
 "	"--option=path"
 "	(*) Requires lh#List#Match()
 "	Version 2.1.5
-"	(*) Use the new lh#path#Simplify(), and lh#path#StripCommon() functions
+"	(*) Use the new lh#path#simplify(), and lh#path#strip_common() functions
 "	Version 2.1.4
 "	(*) Generic code moved to autoload plugins.
 "	(*) New command: :Whereis
@@ -191,45 +191,26 @@ if !exists('!Echo')
   command! -nargs=+ Echo echo "<args>"
 endif
 
-" Mappings and specialized commands for Vim 7+ {{{2
-if v:version >= 700
-  nnoremap <silent> gf
-	\ :call <sid>OpenWith('nobang', 'e', &path, expand('<cfile>'))<cr>
-  nnoremap <silent> glf
-	\ :echo globpath(&path, expand('<cfile>'))<cr>
-  nnoremap <silent> <c-w>f
-	\ :call <sid>OpenWith('nobang', 'sp', &path, expand('<cfile>'))<cr>
-  nnoremap <silent> <c-w>v
-	\ :call <sid>OpenWith('nobang', 'vsp', &path, expand('<cfile>'))<cr>
+" Open one file among several... {{{2
+nnoremap <silent> gf
+      \ :call <sid>OpenWith('nobang', 'e', &path, expand('<cfile>'))<cr>
+nnoremap <silent> glf
+      \ :echo globpath(&path, expand('<cfile>'))<cr>
+nnoremap <silent> <c-w>f
+      \ :call <sid>OpenWith('nobang', 'sp', &path, expand('<cfile>'))<cr>
+nnoremap <silent> <c-w>v
+      \ :call <sid>OpenWith('nobang', 'vsp', &path, expand('<cfile>'))<cr>
 
-  " Function: s:Option(name, default [, scope])            {{{3
-  " Copy-paste from LHOption()
-  function! s:Option(name,default,...)
-    " Name prefixed by my initial to avoid clashes wth other plugins.
-    let scope = (a:0 == 1) ? a:1 : 'bg'
-    let name = a:name
-    let i = 0
-    while i != strlen(scope)
-      if exists(scope[i].':'.name) && (0 != strlen({scope[i]}:{name}))
-	return {scope[i]}:{name}
-      endif
-      let i = i + 1
-    endwhile 
-    return a:default
-  endfunction
-  "  }}}3
+let s:cmd0 = 'command! -bang -nargs=+ -complete=custom,SiRComplete '
+let s:cmd1h = lh#option#get_non_empty('sir_goto_hsplit', 'GSplit', 'g') 
+let s:cmd1v = lh#option#get_non_empty('sir_goto_vsplit', 'VGSplit', 'g') 
 
-  let s:cmd0 = 'command! -bang -nargs=+ -complete=custom,SiRComplete '
-  let s:cmd1h = s:Option('sir_goto_hsplit', 'GSplit', 'g') 
-  let s:cmd1v = s:Option('sir_goto_vsplit', 'VGSplit', 'g') 
+function! s:cmd2(cmd)
+  return ' call <sid>OpenWith("<bang>","'.a:cmd.'", &path, <f-args>)'
+endfunction
 
-  function! s:cmd2(cmd)
-    return ' call <sid>OpenWith("<bang>","'.a:cmd.'", &path, <f-args>)'
-  endfunction
-
-  exe s:cmd0 . s:cmd1h . s:cmd2('sp')
-  exe s:cmd0 . s:cmd1v . s:cmd2('vsp')
-endif
+exe s:cmd0 . s:cmd1h . s:cmd2('sp')
+exe s:cmd0 . s:cmd1v . s:cmd2('vsp')
 
 " }}}1
 " ========================================================================
@@ -266,29 +247,29 @@ function! s:SearchIn(do_all, cmd, rpath, ...)
     let params0 = '' | let params = '' 
     let i = 1
     while i <= a:0
-      if a:{i} =~? '^\(/\|[a-z]:[\\/]\)' " absolute path
+      if lh#path#is_absolute_path(a:{i})
 	if firstTime
 	  if &verbose >= 3 | echo "Absolute path : [" . glob(a:{i}). "]\n" | endif
-	  let f = f . glob(a:{i}) . "\n"
+	  let f .=  glob(a:{i}) . "\n"
 	endif
       elseif a:{i} == "|0"	" Other parameters
-	let i = i + 1
+	let i +=  1
 	while i <= a:0
-	  let params0 = params0 . ' ' . a:{i}
-	  let i = i + 1
+	  let params0 .=  ' ' . a:{i}
+	  let i +=  1
 	endwhile
       elseif a:{i} == "|"	" Other parameters
-	let i = i + 1
+	let i +=  1
 	while i <= a:0
-	  let params = params . ' ' . a:{i}
-	  let i = i + 1
+	  let params .=  ' ' . a:{i}
+	  let i +=  1
 	endwhile
       else
-	let f = f . glob(r.a:{i}). "\n"
+	let f .=  glob(r.a:{i}). "\n"
 	"echo a:{i} . " -- " . glob(r.a:{i})."\n"
 	"echo a:{i} . " -- " . f."\n"
       endif
-      let i = i + 1
+      let i +=  1
     endwhile
     let firstTime = 0
   endwhile
@@ -319,8 +300,8 @@ function! s:SearchIn(do_all, cmd, rpath, ...)
     let msg = "not found : « "
     let i = 1
     while i <= a:0
-      let msg = msg. a:{i} . " "
-      let i = i + 1
+      let msg .=  a:{i} . " "
+      let i +=  1
     endwhile
     echo msg."»"
   endif " }}}
@@ -332,8 +313,8 @@ function! s:SearchInRuntime(bang, cmd, ...)
   let i = 1
   let a = ''
   while i <= a:0
-    let a = a.",'".escape(a:{i}, "\\ \t")."'"
-    let i = i + 1
+    let a .= ",'".escape(a:{i}, "\\ \t")."'"
+    let i +=  1
   endwhile
   exe 'call <sid>SearchIn(do_all, a:cmd, &runtimepath' .a.')'
 endfunction
@@ -345,10 +326,8 @@ function! s:SearchInPATH(bang, cmd, ...)
   let i = 1
   let a = ''
   while i <= a:0
-    " let a = a.",'".a:{i}."'"
-    " let a = a.",'".escape(a:{i}, '\ ')."'"
-    let a = a.",'".escape(a:{i}, "\\ \t")."'"
-    let i = i + 1
+    let a .= ",'".escape(a:{i}, "\\ \t")."'"
+    let i +=  1
   endwhile
   let p = substitute($PATH, ';', ',', 'g')
   let p = s:ToCommaSeparatedPath(p)
@@ -367,19 +346,15 @@ function! s:SearchInVar(bang, env, cmd, ...)
   let i = 1
   let a = ''
   while i <= a:0
-    " let a = a.",'".a:{i}."'"
-    " let a = a.",'".escape(a:{i}, '\ ')."'"
-    let a = a.",'".escape(a:{i}, "\\ \t")."'"
-    let i = i + 1
+    let a .= ",'".escape(a:{i}, "\\ \t")."'"
+    let i +=  1
   endwhile
   exe "let p = substitute(".a:env.", ';', ',', 'g')"
   let p = s:ToCommaSeparatedPath(p)
   exe "call <sid>SearchIn(do_all, a:cmd,'". p ."'".a.")"
 endfunction
 
-" Functions for vim7 only {{{2
-
-if v:version >= 700
+" Open one file among several{{{2
 
 " Function: s:SelectOne({ask_even_if_already_opened}, {path}, {glob-patterns}) {{{3
 " All globbing pattern all matched against the {path}, if several files
@@ -391,18 +366,18 @@ function! s:SelectOne(ask_even_if_already_opened, path, gpatterns)
   let matches = []
   let i = 0
   while i < len(a:gpatterns)
-    if lh#path#IsAbsolutePath(a:gpatterns[i])
-	  \ || lh#path#IsURL(a:gpatterns[i])
+    if lh#path#is_absolute_path(a:gpatterns[i])
+	  \ || lh#path#is_url(a:gpatterns[i])
       let matches += [ a:gpatterns[i] ]
     else
-    let m = lh#path#GlobAsList(a:path, a:gpatterns[i])
+    let m = lh#path#glob_as_list(a:path, a:gpatterns[i])
     call extend (matches, m)
     endif
-    let i = i + 1
+    let i +=  1
   endwhile
 
   " Get rid of doublons
-  call map (matches, 'lh#path#Simplify(v:val)')
+  call map (matches, 'lh#path#simplify(v:val)')
   call sort(matches)
   "     uniq...
   let i = 1
@@ -410,7 +385,7 @@ function! s:SelectOne(ask_even_if_already_opened, path, gpatterns)
     if matches[i-1] == matches[i]
       call remove(matches, i)
     else
-      let i = i + 1
+      let i +=  1
     endif
   endwhile
 
@@ -422,17 +397,12 @@ function! s:SelectOne(ask_even_if_already_opened, path, gpatterns)
       " buffers....
       let i = 0
       while i != len(matches)
-	if lh#buffer#Find(matches[i]) != -1 | return '' | endif
-	let i = i + 1
+	if lh#buffer#find(matches[i]) != -1 | return '' | endif
+	let i +=  1
       endwhile
       " No matching opened buffer found.
     endif
-    let simpl_matches = deepcopy(matches) 
-    let simpl_matches = lh#path#StripCommon(simpl_matches)
-    let simpl_matches = [ '&Cancel' ] + simpl_matches
-    " Consider guioptions+=c is case of difficulties with the gui
-    let selection = confirm('Select file to open:', join(simpl_matches,"\n"), 1, 'Question')
-    let file = (selection == 1) ? '' : matches[selection-2]
+    let file = lh#path#select_one(matches, 'Select file to open:')
   elseif len(matches) == 0
     let file = ''
   else
@@ -453,7 +423,7 @@ endfunction
 let s:k_pattern = '^-\([a-zA-Z0-9]\|-\w\+=\)'
 function! s:OpenWith(bang, cmd, path, ...)
   let file = s:DoOpenWith(a:bang, a:cmd, a:path, a:000)
-  if strlen(file) == 0 && lh#list#Match(a:000, s:k_pattern) != -1
+  if strlen(file) == 0 && lh#list#match(a:000, s:k_pattern) != -1
     let a000 = deepcopy(a:000)
     call map(a000, 'substitute(v:val, s:k_pattern, "", "g")')
     echomsg string(a000)
@@ -465,7 +435,7 @@ function! s:OpenWith(bang, cmd, path, ...)
     echohl None
     return
   endif
-  if lh#buffer#Find(file) != -1 | return | endif
+  if lh#buffer#find(file) != -1 | return | endif
   exe a:cmd . ' '.file
 endfunction
 
@@ -477,7 +447,6 @@ function! s:DoOpenWith(bang, cmd, path, a000)
   return file
 endfunction
 
-endif " version >= 700
 
 " Auto-completion                                {{{2
 " Note: the completion cannot expand with different leading data
@@ -550,60 +519,9 @@ endfunction
 
 " s:MatchingCommands(ArgLead)                              {{{3
 " return the list of custom commands starting by {FirstLetters}
-"
-if v:version > 603 || v:version == 603 && has('patch011') 
-  " should be the required version
-  function! s:MatchingCommands(ArgLead)
-    silent! exe "norm! :".a:ArgLead."\<c-a>\"\<home>let\ cmds=\"\<cr>"
-    let cmds = substitute(cmds, '\s\+', '\n', 'g')
-    return cmds
-  endfunction
-
-else
-  " Thislimited version works with older version of vim, but only return custom
-  " commands
-  function! s:MatchingCommands(ArgLead)
-    let a_save=@a
-    silent! redir @a
-    silent! exe 'command '.a:ArgLead
-    redir END
-    let cmds = @a
-    let @a = a_save
-    let pat = '\%(^\|\n\)\s\+\(\S\+\).\{-}\ze\(\n\|$\)'
-    let cmds=substitute(cmds, pat, '\1\2', 'g')
-    return cmds
-  endfunction
-endif
-
-function! s:MatchingCommandsOld(ArgLead) " {{{4
-  "
-  " a- First approach
-  " let a_save=@a
-  " silent! redir @a
-  " silent! exe 'command '.a:ArgLead
-  " redir END
-  " let cmds = @a
-  " let @a = a_save
-  "
-  " b- second approach
-  " silent! exe "norm! :".a:ArgLead."\<c-a>\"\<home>let\ cmds=\"\<cr>"
-  "
-  " c- genutils' approach
-  command! -complete=command -nargs=* CMD :echo '<arg>'
-  " let a_save=@a
-  " silent! redir @a
-  " silent! exec "norm! :".a:ArgLead."\<c-A>\"\<Home>echo\ \"\<cr>"
-  " silent! exec "normal! :CMD ".a:ArgLead."\<c-A>\<cr>"
-  " redir END
-  " let cmds = @a
-  " let @a = a_save
-  let cmds = GetVimCmdOutput("normal! :CMD ".a:ArgLead."\<C-A>\<CR>")
-
+function! s:MatchingCommands(ArgLead)
+  silent! exe "norm! :".a:ArgLead."\<c-a>\"\<home>let\ cmds=\"\<cr>"
   let cmds = substitute(cmds, '\s\+', '\n', 'g')
-  
-  " let pat = '\%(^\|\n\)\s\+\(\S\+\).\{-}\ze\(\n\|$\)'
-  " let cmds=substitute(cmds, pat, '\1\2', 'g')
-
   return cmds
 endfunction
 
@@ -614,7 +532,7 @@ function! s:FindMatchingFiles(pathsList, ArgLead)
   let ArgLead = a:ArgLead
   " If there is no '*' in the ArgLead, append it
   if -1 == stridx(ArgLead, '*')
-    let ArgLead = ArgLead . '*'
+    let ArgLead .=  '*'
   endif
   " Get the matching paths
   let paths = globpath(pathsList, ArgLead)
@@ -628,7 +546,7 @@ function! s:FindMatchingFiles(pathsList, ArgLead)
     let p     = fnamemodify(p, ':t') . sl
     if strlen(p) && (!strlen(result) || (result !~ '.*'.p.'.*'))
       " Append the matching path is not already in the result list
-      let result = result . (strlen(result) ? "\n" : '') . p
+      let result .=  (strlen(result) ? "\n" : '') . p
     endif
   endwhile
 
@@ -644,36 +562,27 @@ function! s:FindMatchingFiles(pathsList, ArgLead)
 endfunction
 
 " s:FindMatchingVariable(ArgLead)                          {{{3
+function! s:FindMatchingVariable(ArgLead)
+  if     a:ArgLead[0] == '$'
+    command! -complete=environment -nargs=* FindVariable :echo '<arg>'
+    let ArgLead = strpart(a:ArgLead, 1)
+  elseif a:ArgLead[0] == '&'
+    command! -complete=option -nargs=* FindVariable :echo '<arg>'
+    let ArgLead = strpart(a:ArgLead, 1)
+  else
+    command! -complete=expression -nargs=* FindVariable :echo '<arg>'
+    let ArgLead = a:ArgLead
+  endif
 
-if v:version > 603 || v:version == 603 && has('patch011') 
-  " should be the required version
-  function! s:FindMatchingVariable(ArgLead)
-    if     a:ArgLead[0] == '$'
-      command! -complete=environment -nargs=* FindVariable :echo '<arg>'
-      let ArgLead = strpart(a:ArgLead, 1)
-    elseif a:ArgLead[0] == '&'
-      command! -complete=option -nargs=* FindVariable :echo '<arg>'
-      let ArgLead = strpart(a:ArgLead, 1)
-    else
-      command! -complete=expression -nargs=* FindVariable :echo '<arg>'
-      let ArgLead = a:ArgLead
-    endif
-
-    silent! exe "norm! :FindVariable ".ArgLead."\<c-a>\"\<home>let\ cmds=\"\<cr>"
-    if a:ArgLead[0] =~ '[$&]'
-      let cmds = substitute(cmds, '\<\S', escape(a:ArgLead[0], '&').'&', 'g')
-    endif
-    let cmds = substitute(cmds, '\s\+', '\n', 'g')
-    let g:cmds = cmds
-    return cmds
-    " delc FindVariable
-  endfunction
-
-else
-  function! s:FindMatchingVariable(ArgLead)
-    return ''
-  endfunction
-endif
+  silent! exe "norm! :FindVariable ".ArgLead."\<c-a>\"\<home>let\ cmds=\"\<cr>"
+  if a:ArgLead[0] =~ '[$&]'
+    let cmds = substitute(cmds, '\<\S', escape(a:ArgLead[0], '&').'&', 'g')
+  endif
+  let cmds = substitute(cmds, '\s\+', '\n', 'g')
+  let g:cmds = cmds
+  return cmds
+  " delc FindVariable
+endfunction
 
 
 " }}}1
