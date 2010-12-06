@@ -3,7 +3,7 @@
 
 
                      SearchInRuntime MANUAL     by Luc Hermitte
-                     Version 2.1.8
+                     Version 2.1.9
 
 
 ------------------------------------------------------------------------------

@@ -4,13 +4,15 @@
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 " 		<URL:http://code.google.com/p/lh-vim/>
 " Last Update:  $Date$
-" Version:	2.1.8
+" Version:	2.1.9
 "
 " Purpose:	Search a file in the runtime path, $PATH, or any other
 "               variable, and execute an Ex command on it.
 " URL:http://hermitte.free.fr/vim/ressources/vimfiles/plugin/searchInRuntime.vim
 " ======================================================================
 " History: {{{
+"	Version 2.1.9
+"	(*) <c-w>f will support shell pathnames like "${HOME}/.vim"
 "	Version 2.1.7
 "	(*) It wasn't able to expand paths on windows because of fnamemodify()
 "	that returns '.' instead of an empty string.
@@ -366,11 +368,14 @@ function! s:SelectOne(ask_even_if_already_opened, path, gpatterns)
   let matches = []
   let i = 0
   while i < len(a:gpatterns)
-    if lh#path#is_absolute_path(a:gpatterns[i])
-	  \ || lh#path#is_url(a:gpatterns[i])
-      let matches += [ a:gpatterns[i] ]
+    let pattern = a:gpatterns[i]
+    " replace environment variables like ${HOME} we see in shell scripts
+    let pattern = lh#env#expand_all(pattern)
+    if lh#path#is_absolute_path(pattern)
+	  \ || lh#path#is_url(pattern)
+      let matches += [ pattern ]
     else
-    let m = lh#path#glob_as_list(a:path, a:gpatterns[i])
+    let m = lh#path#glob_as_list(a:path, pattern)
     call extend (matches, m)
     endif
     let i +=  1
