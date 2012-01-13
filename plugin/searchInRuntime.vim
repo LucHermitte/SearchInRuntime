@@ -4,13 +4,15 @@
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 " 		<URL:http://code.google.com/p/lh-vim/>
 " Last Update:  $Date$
-" Version:	2.1.9
+" Version:	2.1.10
 "
 " Purpose:	Search a file in the runtime path, $PATH, or any other
 "               variable, and execute an Ex command on it.
 " URL:http://hermitte.free.fr/vim/ressources/vimfiles/plugin/searchInRuntime.vim
 " ======================================================================
 " History: {{{
+"	Version 2.1.10
+"	(*) More explicit "No file found" error message
 "	Version 2.1.9
 "	(*) <c-w>f will support shell pathnames like "${HOME}/.vim"
 "	Version 2.1.7
@@ -436,7 +438,7 @@ function! s:OpenWith(bang, cmd, path, ...)
   endif
   if strlen(file) == 0 
     echohl WarningMsg
-    echomsg "No file found for ".string(a:000)
+    echomsg "No file found for ".string(a:000)."in ".&path
     echohl None
     return
   endif
