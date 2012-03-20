@@ -1,9 +1,9 @@
 *searchInRuntime.txt*   Plugin for searching within list of directories
-                        For Vim version 7.1+.   Last change: 10th May 2010
+                        For Vim version 7.1+.   Last change: 20th Mar 2012
 
 
                      SearchInRuntime MANUAL     by Luc Hermitte
-                     Version 2.1.9
+                     Version 3.0.0
 
 
 ------------------------------------------------------------------------------
@@ -276,7 +276,7 @@ feature not disabled.
 
 
 ------------------------------------------------------------------------------
- © Luc Hermitte, 2001-2010 <http://hermitte.free.fr/vim/>
+ © Luc Hermitte, 2001-2012 <http://code.google.com/p/lh-vim/>, CC by SA 3.0 {{{1
  $Id$
  VIM: let b:VS_language = 'american' 
  vim:ts=8:sw=4:tw=80:fo=tcq2:isk=!-~,^*,^\|,^\":ft=help:

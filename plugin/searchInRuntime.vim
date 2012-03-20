@@ -4,13 +4,16 @@
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 " 		<URL:http://code.google.com/p/lh-vim/>
 " Last Update:  $Date$
-" Version:	2.1.10
+" License:      GPLv3 with exceptions
+"               <URL:http://code.google.com/p/lh-vim/wiki/License>
+" Version:	3.0.0
 "
 " Purpose:	Search a file in the runtime path, $PATH, or any other
 "               variable, and execute an Ex command on it.
-" URL:http://hermitte.free.fr/vim/ressources/vimfiles/plugin/searchInRuntime.vim
 " ======================================================================
 " History: {{{
+"	Version 3.0.0
+"	(*) GPLv3
 "	Version 2.1.10
 "	(*) More explicit "No file found" error message
 "	Version 2.1.9
