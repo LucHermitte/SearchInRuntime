@@ -441,7 +441,7 @@ function! s:OpenWith(bang, cmd, path, ...)
   endif
   if strlen(file) == 0 
     echohl WarningMsg
-    echomsg "No file found for ".string(a:000)."in ".&path
+    echomsg "No file found for ".string(a:000)." in ".a:path
     echohl None
     return
   endif
