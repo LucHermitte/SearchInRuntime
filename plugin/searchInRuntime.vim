@@ -6,14 +6,17 @@
 " Last Update:  $Date$
 " License:      GPLv3 with exceptions
 "               <URL:http://code.google.com/p/lh-vim/wiki/License>
-" Version:	3.0.1
+" Version:	3.0.2
 "
 " Purpose:	Search a file in the runtime path, $PATH, or any other
 "               variable, and execute an Ex command on it.
 " ======================================================================
 " History: {{{
+"	Version 3.0.2
+"	(*) :split-open functions accept "file:line" as parameter (bugfix)
+"	(*) :split-open functions accepts "file:line:col" as parameter (bugfix)
 "	Version 3.0.1
-"	(*) :split-open functions accept "file:line" as parameter
+"	(*) :split-open functions accepts "file:line" as parameter
 "	Version 3.0.0
 "	(*) GPLv3
 "	Version 2.1.10
@@ -434,7 +437,7 @@ endfunction
 " for {cmd} are "sp", "e", ...
 let s:k_pattern = '^-\([a-zA-Z0-9]\|-\w\+=\)'
 function! s:OpenWith(bang, cmd, path, ...)
-  let [file, line] = s:DoOpenWith(a:bang, a:cmd, a:path, a:000)
+  let [file, line, col] = s:DoOpenWith(a:bang, a:cmd, a:path, a:000)
   if strlen(file) == 0 && lh#list#match(a:000, s:k_pattern) != -1
     let a000 = deepcopy(a:000)
     call map(a000, 'substitute(v:val, s:k_pattern, "", "g")')
@@ -447,10 +450,11 @@ function! s:OpenWith(bang, cmd, path, ...)
     echohl None
     return
   endif
-  if lh#buffer#find(file) != -1 | return | endif
-  exe a:cmd . ' '.file
+  if lh#buffer#find(file) == -1 
+    exe a:cmd . ' '.file
+  endif
   if line > 0
-    exe ':'.line
+    call setpos('.', [0, line, col, 0])
   endif
 endfunction
 
@@ -461,11 +465,11 @@ function! s:DoOpenWith(bang, cmd, path, a000)
   let line = 0
   let patterns = a:a000
   if len(patterns) == 1
-    let [all, pattern, line ; tail] = matchlist(patterns[0], '^\(.\{-}\)\%(:\(\d\+\)\)\=$')
+    let [all, pattern, line, col ; tail] = matchlist(patterns[0], '^\(.\{-}\)\%(:\(\d\+\)\)\=\%(:\(\d\+\)\)\=$')
     let patterns = [pattern]
   endif
   let file = s:SelectOne(ask_even_if_already_opened, a:path, patterns)
-  return [file, line]
+  return [file, line, col]
 endfunction
 
 
