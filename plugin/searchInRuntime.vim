@@ -6,12 +6,14 @@
 " Last Update:  $Date$
 " License:      GPLv3 with exceptions
 "               <URL:http://code.google.com/p/lh-vim/wiki/License>
-" Version:	3.0.2
+" Version:	3.0.3
 "
 " Purpose:	Search a file in the runtime path, $PATH, or any other
 "               variable, and execute an Ex command on it.
 " ======================================================================
 " History: {{{
+"	Version 3.0.3
+"	(*) <c-w>f and <c-w>v also work on visual selection
 "	Version 3.0.2
 "	(*) :split-open functions accept "file:line" as parameter (bugfix)
 "	(*) :split-open functions accepts "file:line:col" as parameter (bugfix)
@@ -212,6 +214,10 @@ nnoremap <silent> <c-w>f
       \ :call <sid>OpenWith('nobang', 'sp', &path, expand('<cfile>'))<cr>
 nnoremap <silent> <c-w>v
       \ :call <sid>OpenWith('nobang', 'vsp', &path, expand('<cfile>'))<cr>
+xnoremap <silent> <c-w>f
+      \ :call <sid>OpenWith('nobang', 'sp', &path, expand(lh#visual#selection()))<cr>
+xnoremap <silent> <c-w>v
+      \ :call <sid>OpenWith('nobang', 'vsp', &path, expand(lh#visual#selection()))<cr>
 
 let s:cmd0 = 'command! -bang -nargs=+ -complete=custom,SiRComplete '
 let s:cmd1h = lh#option#get_non_empty('sir_goto_hsplit', 'GSplit', 'g') 

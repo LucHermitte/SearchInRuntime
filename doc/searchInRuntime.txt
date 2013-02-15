@@ -1,9 +1,9 @@
 *searchInRuntime.txt*   Plugin for searching within list of directories
-                        For Vim version 7.1+.   Last change: 20th Mar 2012
+                        For Vim version 7.1+.   Last change: 15th Feb 2013
 
 
                      SearchInRuntime MANUAL     by Luc Hermitte
-                     Version 3.0.0
+                     Version 3.0.2
 
 
 ------------------------------------------------------------------------------
@@ -183,6 +183,7 @@ Overrides of standard keybindings~
 - and to jump to an already opened window containing the selected file.
 - |CTRL-W_v| will do work as |CTRL-W_f|, but the window will be split
 vertically. @todo support an option to not override default mecanism.
+- Both mappings work in visual and in normal modes.
 
 *glf* displays the list of files, in 'path', that match the filename under the
 cursor.
