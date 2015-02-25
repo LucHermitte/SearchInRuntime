@@ -6,12 +6,14 @@
 " Last Update:  $Date$
 " License:      GPLv3 with exceptions
 "               <URL:http://code.google.com/p/lh-vim/wiki/License>
-" Version:	3.0.3
+" Version:	3.0.4
 "
 " Purpose:	Search a file in the runtime path, $PATH, or any other
 "               variable, and execute an Ex command on it.
 " ======================================================================
 " History: {{{
+"	Version 3.0.4
+"	(*) Resist to filenames with spaces -> using |fnameescape()|
 "	Version 3.0.3
 "	(*) <c-w>f and <c-w>v also work on visual selection
 "	Version 3.0.2
@@ -457,7 +459,7 @@ function! s:OpenWith(bang, cmd, path, ...)
     return
   endif
   if lh#buffer#find(file) == -1 
-    exe a:cmd . ' '.file
+    exe a:cmd . ' '.fnameescape(file)
   endif
   if line > 0
     call setpos('.', [0, line, col, 0])
