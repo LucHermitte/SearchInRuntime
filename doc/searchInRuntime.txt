@@ -1,9 +1,9 @@
 *searchInRuntime.txt*   Plugin for searching within list of directories
-                        For Vim version 7.1+.   Last change: 15th Feb 2013
+                        For Vim version 7.1+.   Last change: 15th Mar 2015
 
 
                      SearchInRuntime MANUAL     by Luc Hermitte
-                     Version 3.0.2
+                     Version 3.0.4
 
 
 ------------------------------------------------------------------------------
@@ -255,15 +255,6 @@ And now are some of the different ways I use to use this plugin.
 
 
 ------------------------------------------------------------------------------
-                                                *SiR-obtain*
-Where to obtain this plugin~
-
-This plugin can be dowloaded:
-- on my web site: <http://hermitte.free.fr/vim/general.php>
-- on sourceforge: <http://vim.sourceforge.net/scripts/script.php?script_id=229>
-
-
-------------------------------------------------------------------------------
                                                 *SiR-completion*
 A few word about automatic completion~
 
@@ -277,7 +268,6 @@ feature not disabled.
 
 
 ------------------------------------------------------------------------------
- © Luc Hermitte, 2001-2012 <http://code.google.com/p/lh-vim/>, CC by SA 3.0 {{{1
- $Id$
+ © Luc Hermitte, 2001-2015 <http://github.com/LucHermitte/SearchInRuntime>, CC by SA 3.0 {{{1
  VIM: let b:VS_language = 'american' 
  vim:ts=8:sw=4:tw=80:fo=tcq2:isk=!-~,^*,^\|,^\":ft=help:
