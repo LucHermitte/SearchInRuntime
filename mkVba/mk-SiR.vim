@@ -1,25 +1,28 @@
 "=============================================================================
-" $Id$
 " File:		mk-SiR.vim
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
-"		<URL:http://hermitte.free.fr/vim/>
+"		<URL:http://github.com/LucHermitte/SearchInRuntime>
 " License:      GPLv3 with exceptions
-"               <URL:http://code.google.com/p/lh-vim/wiki/License>
-" Version:	3.0.4
-let s:version = '3.0.4'
+"               <URL:http://github.com/LucHermitte/SearchInRuntime/License.md>
+" Version:	3.0.5
+let s:version = '3.0.5'
 " Created:	06th Nov 2007
-" Last Update:	$Date$
+" Last Update:	18th Nov 2015
 "------------------------------------------------------------------------
 cd <sfile>:p:h
-try 
+try
   let save_rtp = &rtp
   let &rtp = expand('<sfile>:p:h:h').','.&rtp
-  exe '22,$MkVimball! searchInRuntime-'.s:version
+  exe '23,$MkVimball! searchInRuntime-'.s:version
   set modifiable
   set buftype=
 finally
   let &rtp = save_rtp
 endtry
 finish
+License.md
+README.md
+VimFlavor
+addon-info.json
 doc/searchInRuntime.txt
 plugin/searchInRuntime.vim
