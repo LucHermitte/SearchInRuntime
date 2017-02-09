@@ -305,7 +305,7 @@ endfunction
 
 " Auto-completion                                {{{2
 " Note: the completion cannot expand with different leading data
-" SiRComplete(ArgLead,CmdLine,CursorPos)                   {{{3
+" lh#sir#complete(ArgLead,CmdLine,CursorPos)                   {{{3
 let s:commands = '^SearchIn\S\+\|^V\=[Ss]p\%[lit]\|^Ru\%[ntime]\|^W\%[hereis]'
 let s:split_commands = '^V\=[Ss]p\%[lit]$'
 if exists('s:cmd1h')
@@ -317,7 +317,7 @@ if exists('s:cmd1h')
   let s:split_commands = s:split_commands . '\|^'.s:cmd1h_pat.'$\|^'.s:cmd1v_pat.'$'
 endif
 
-function! SiRComplete(ArgLead, CmdLine, CursorPos)
+function! lh#sir#complete(ArgLead, CmdLine, CursorPos)
   let cmd = matchstr(a:CmdLine, s:commands)
   let cmdpat = '^'.cmd
 

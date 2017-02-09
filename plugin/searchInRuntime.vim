@@ -2,7 +2,7 @@
 " File:		plugin/searchInRuntime.vim
 " Author:	Luc Hermitte <EMAIL:hermitte {at} free {dot} fr>
 " 		<URL:http://github.com/LucHermitte/SearchInRuntime>
-" Last Update:  03rd Jan 2017
+" Last Update:  17th Jan 2017
 " License:      GPLv3 with exceptions
 "               <URL:http://github.com/LucHermitte/SearchInRuntime/tree/master/Licence.md>
 " Version:	3.1.0
@@ -187,21 +187,21 @@ let g:loaded_searchInRuntime = 310
 " Commands                                                 {{{1
 
 " Generic commands {{{2
-command! -nargs=+ -complete=custom,SiRComplete -bang
+command! -nargs=+ -complete=custom,lh#sir#complete -bang
       \       SearchInRuntime	call lh#sir#SearchInRuntime("<bang>",  <f-args>)
-command! -nargs=+ -complete=custom,SiRComplete -bang
+command! -nargs=+ -complete=custom,lh#sir#complete -bang
       \       SearchInVar	call lh#sir#SearchInVar    ("<bang>", <f-args>)
-command! -nargs=+ -complete=custom,SiRComplete -bang
+command! -nargs=+ -complete=custom,lh#sir#complete -bang
       \       SearchInPATH	call lh#sir#SearchInPATH   ("<bang>", <f-args>)
 
 " Specialized commands {{{2
-command! -nargs=+ -complete=custom,SiRComplete -bang
+command! -nargs=+ -complete=custom,lh#sir#complete -bang
       \       Runtime		:runtime<bang> <args>
-command! -nargs=+ -complete=custom,SiRComplete -bang
+command! -nargs=+ -complete=custom,lh#sir#complete -bang
       \       Split		:SearchInVar<bang> &path sp <args>
-command! -nargs=+ -complete=custom,SiRComplete -bang
+command! -nargs=+ -complete=custom,lh#sir#complete -bang
       \       Vsplit		:SearchInVar<bang> &path vsp <args>
-command! -nargs=1 -complete=custom,SiRComplete -bang
+command! -nargs=1 -complete=custom,lh#sir#complete -bang
       \       Whereis		:echo globpath(&path,'*<args>*')
 
 if !exists('!Echo')
@@ -222,7 +222,7 @@ xnoremap <silent> <c-w>f
 xnoremap <silent> <c-w>v
       \ :call lh#sir#OpenWith('nobang', 'vsp', &path, expand(lh#visual#selection()))<cr>
 
-let s:cmd0 = 'command! -bang -nargs=+ -complete=custom,SiRComplete '
+let s:cmd0 = 'command! -bang -nargs=+ -complete=custom,lh#sir#complete '
 let s:cmd1h = lh#option#get_non_empty('sir_goto_hsplit', 'GSplit', 'g')
 let s:cmd1v = lh#option#get_non_empty('sir_goto_vsplit', 'VGSplit', 'g')
 
