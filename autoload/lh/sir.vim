@@ -5,7 +5,7 @@
 " Version:      3.1.0.
 let s:k_version = '310'
 " Created:      03rd Jan 2017
-" Last Update:  03rd Jan 2017
+" Last Update:  09th Feb 2017
 "------------------------------------------------------------------------
 " Description:
 "       Support functions for plugin/searchInRuntime.vim
@@ -268,7 +268,7 @@ function! lh#sir#OpenWith(bang, cmd, path, ...)
     echohl WarningMsg
     echomsg "No file found for ".string(a:000)." in ".a:path
     echohl None
-    return
+    return 0
   endif
   if lh#buffer#find(file) == -1
     exe a:cmd . ' '.fnameescape(file)
@@ -283,11 +283,21 @@ endfunction
 function! s:DoOpenWith(bang, cmd, path, a000)
   let ask_even_if_already_opened = a:bang == "!"
   let line = 0
+  let suffixes = [''] + split(','.&suffixesadd, ',')
   let patterns = a:a000
   if len(patterns) == 1
     let [all, pattern, line, col ; tail] = matchlist(patterns[0], '^\(.\{-}\)\%(:\(\d\+\)\)\=\%(:\(\d\+\)\)\=$')
     let patterns = [pattern]
+  else
+    let line = 1
+    let col  = 1
   endif
+  if !empty(&includeexpr)
+    let patterns += map(copy(patterns), substitute(&includeexpr, 'v:fname', 'v:val', 'g'))
+  endif
+  let patterns = lh#list#cross(patterns, suffixes, 'v:val . l:val2')
+  call s:Verbose("Searching for %1 (suffixes: %2, includeexpr)", patterns, suffixes, &includeexpr)
+  let pattern = lh#list#uniq(patterns)
   let file = s:SelectOne(ask_even_if_already_opened, a:path, patterns)
   return [file, line, col]
 endfunction
